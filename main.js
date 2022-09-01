@@ -1,6 +1,6 @@
 let logo, logoAnimation = true;
 let pselectedChord, keyboradBorder, checkBtn;
-let arrayKeys = [];
+let arrayKeys = [], arrayHalfKeys = [], arrayBlackKeys = [];
 
 let selectedKeys = [];
 
@@ -172,20 +172,26 @@ function createBlackKey(noteid,leftNote, rightNote){
     note.className = noteid;
     note.classList.add("blackKey"); 
     note.onclick = keySelected;
+    arrayBlackKeys.push(note);
     box.appendChild(note);
 
     let whiteBox = document.createElement("div");
     whiteBox.className = "columnFlex";
     whiteBox.style.flexDirection = "row";
+
     let leftHalf = document.createElement("div");
     leftHalf.className = leftNote;
     leftHalf.classList.add("flexHalf");
     leftHalf.onclick = keySelected;
+    arrayHalfKeys.push(leftHalf);
     leftHalf.style.borderRight = "4px solid black";
+
     let rightHalf = document.createElement("div");
     rightHalf.className = rightNote;
     rightHalf.classList.add("flexHalf");
     rightHalf.onclick = keySelected;
+    arrayHalfKeys.push(rightHalf);
+
     whiteBox.appendChild(leftHalf);
     whiteBox.appendChild(rightHalf);
     box.appendChild(whiteBox);
@@ -298,29 +304,31 @@ function noteDictionary(note){
 }
 
 function check(){
-    if(validateNotes){
+    if(validateNotes()){
         computerSelectedKey = Math.floor(Math.random()*keys.length);
         computerSelectedInterval = Math.floor(Math.random()*intervals.length);
         pselectedChord.innerHTML = keys[computerSelectedKey]+intervals[computerSelectedInterval].name;
     }
     selectedKeys = [];
     changeColor(arrayKeys,"white");
+    changeColor(arrayHalfKeys,"white");
+    changeColor(arrayBlackKeys,"#141204");
 }
 
 function validateNotes(){
-    if(computerSelectedInterval.numberOfNotes!=selectedKeys.length)
+    if(intervals[computerSelectedInterval].numberOfNotes!=selectedKeys.length)
         return false;
     for(let i = 0; i<selectedKeys.length;i++){
         selectedKeys[i] = noteDictionary(selectedKeys[i]);
     }
     if(selectedKeys[0]!=computerSelectedKey+1)
         return false;
-    if(selectedKeys[1]-selectedKeys[0] != computerSelectedInterval.firstInerval)
+    if(selectedKeys[1]-selectedKeys[0] != intervals[computerSelectedInterval].firstInerval)
         return false;
-    if(selectedKeys[2]-selectedKeys[0] != computerSelectedInterval.secondInterval)
+    if(selectedKeys[2]-selectedKeys[0] != intervals[computerSelectedInterval].secondInterval)
         return false;
-    if(computerSelectedInterval.numberOfNotes>3){
-        if(selectedKeys[3]-selectedKeys[0] != computerSelectedInterval.thirdInterval)
+    if(intervals[computerSelectedInterval].numberOfNotes>3){
+        if(selectedKeys[3]-selectedKeys[0] != intervals[computerSelectedInterval].thirdInterval)
         return false;
     }
     return true;
