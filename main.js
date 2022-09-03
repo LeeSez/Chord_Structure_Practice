@@ -1,8 +1,9 @@
 let logo, logoAnimation = true;
-let pselectedChord, keyboradBorder, checkBtn;
+let pselectedChord, keyboradBorder, checkBtn, audio;
 let arrayKeys = [], arrayHalfKeys = [], arrayBlackKeys = [];
 
 let selectedKeys = [];
+
 
 let keys = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
 let intervals = [
@@ -33,21 +34,42 @@ let intervals = [
         firstInerval:4,
         secondInterval:7,
         thirdInterval:0
+    },
+    {
+        name:"maj7",
+        numberOfNotes:4,
+        firstInerval:4,
+        secondInterval:7,
+        thirdInterval:11
+    },
+    {
+        name:"min7",
+        numberOfNotes:4,
+        firstInerval:3,
+        secondInterval:7,
+        thirdInterval:10
+    },
+    {
+        name:"7",
+        numberOfNotes:4,
+        firstInerval:4,
+        secondInterval:7,
+        thirdInterval:10
     }
 ];
-
-let computerSelectedKey,computerSelectedInterval;
+let computerSelectedKey = Math.floor(Math.random()*keys.length);
+let computerSelectedInterval = Math.floor(Math.random()*intervals.length);
 
 function init(){
+    audio = document.createElement("audio");
     logo = document.getElementById("logo");
     logoAni();
 }
 
 function start(){
-    //logoAnimation = false;
+    audio.src = "music/"+keys[computerSelectedKey]+"/"+keys[computerSelectedKey]+intervals[computerSelectedInterval].name+".wav";
+    audio.play();
     removeAllChilds(document.body);
-    computerSelectedKey = Math.floor(Math.random()*keys.length);
-    computerSelectedInterval = Math.floor(Math.random()*intervals.length);
     bulidGame();
 }
 
@@ -105,6 +127,7 @@ function bulidGame(){
 function createKeyboard(){
     keyboradBorder = document.createElement("div");
     keyboradBorder.id = "keyboard";
+    keyboradBorder.style.margin = "3%";
 
     for(let j = 1; j<3; j++){
         let c = document.createElement("div");
@@ -226,6 +249,78 @@ function changeColor(arr,color){
     }
 }
 
+
+function check(){
+    if(validateNotes()){
+        computerSelectedKey = Math.floor(Math.random()*keys.length);
+        computerSelectedInterval = Math.floor(Math.random()*intervals.length);
+        
+        //playing the new chord
+        audio.pause();
+        if(keys[computerSelectedKey][1]=="#"){
+            let naturalKey = keys[computerSelectedKey][0]+"s";
+            audio.src = "music/"+naturalKey+"/"+naturalKey+intervals[computerSelectedInterval].name+".wav";
+        }
+        else{
+            audio.src = "music/"+keys[computerSelectedKey]+"/"+keys[computerSelectedKey]+intervals[computerSelectedInterval].name+".wav";
+        }
+        audio.play();
+        
+        pselectedChord.innerHTML = keys[computerSelectedKey]+intervals[computerSelectedInterval].name;
+    }
+    selectedKeys = [];
+    changeColor(arrayKeys,"white");
+    changeColor(arrayHalfKeys,"white");
+    changeColor(arrayBlackKeys,"#141204");
+}
+
+function validateNotes(){
+    if(intervals[computerSelectedInterval].numberOfNotes!=selectedKeys.length)
+        return false;
+    for(let i = 0; i<selectedKeys.length;i++){
+        selectedKeys[i] = noteDictionary(selectedKeys[i]);
+    }
+    sort(selectedKeys);
+    if(selectedKeys[0]!=computerSelectedKey+1)
+        return false;
+    if(selectedKeys[1]-selectedKeys[0] != intervals[computerSelectedInterval].firstInerval)
+        return false;
+    if(selectedKeys[2]-selectedKeys[0] != intervals[computerSelectedInterval].secondInterval)
+        return false;
+    if(intervals[computerSelectedInterval].numberOfNotes>3){
+        if(selectedKeys[3]-selectedKeys[0] != intervals[computerSelectedInterval].thirdInterval)
+        return false;
+    }
+    return true;
+}
+
+function sort(arr){
+    for(let i = 0; i<arr.length; i++){
+        for(let j=1;j<arr.length - i;j++){
+            if(arr[j-1]>arr[j]){
+                let temp = arr[j-1];
+                arr[j-1] = arr[j];
+                arr[j]=temp;
+            }
+        }
+    }
+}
+
+//the logo animation
+function logoAni(){
+    if(logoAnimation){
+        switch(Math.floor(Math.random()*2)){
+            case 0:
+                logo.style.color = "#F9DDAF";
+                break;
+            case 1:
+                logo.style.color = "#E9BA6F";
+                break;
+        }
+        setTimeout(logoAni,300);
+    }
+}
+
 function noteDictionary(note){
     switch(note){
         case 'c1':
@@ -300,52 +395,5 @@ function noteDictionary(note){
         case 'b2':
             return 24;
             break;
-    }
-}
-
-function check(){
-    if(validateNotes()){
-        computerSelectedKey = Math.floor(Math.random()*keys.length);
-        computerSelectedInterval = Math.floor(Math.random()*intervals.length);
-        pselectedChord.innerHTML = keys[computerSelectedKey]+intervals[computerSelectedInterval].name;
-    }
-    selectedKeys = [];
-    changeColor(arrayKeys,"white");
-    changeColor(arrayHalfKeys,"white");
-    changeColor(arrayBlackKeys,"#141204");
-}
-
-function validateNotes(){
-    if(intervals[computerSelectedInterval].numberOfNotes!=selectedKeys.length)
-        return false;
-    for(let i = 0; i<selectedKeys.length;i++){
-        selectedKeys[i] = noteDictionary(selectedKeys[i]);
-    }
-    if(selectedKeys[0]!=computerSelectedKey+1)
-        return false;
-    if(selectedKeys[1]-selectedKeys[0] != intervals[computerSelectedInterval].firstInerval)
-        return false;
-    if(selectedKeys[2]-selectedKeys[0] != intervals[computerSelectedInterval].secondInterval)
-        return false;
-    if(intervals[computerSelectedInterval].numberOfNotes>3){
-        if(selectedKeys[3]-selectedKeys[0] != intervals[computerSelectedInterval].thirdInterval)
-        return false;
-    }
-    return true;
-}
-
-
-//the logo animation
-function logoAni(){
-    if(logoAnimation){
-        switch(Math.floor(Math.random()*2)){
-            case 0:
-                logo.style.color = "#F9DDAF";
-                break;
-            case 1:
-                logo.style.color = "#E9BA6F";
-                break;
-        }
-        setTimeout(logoAni,300);
     }
 }

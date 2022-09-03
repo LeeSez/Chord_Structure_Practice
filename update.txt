@@ -1,0 +1,4 @@
+1. you can now mark the notes at any order and computer will compute the result correctly
+2. added 7th chords
+3. chords are now playing when they are presented
+4. a generan unrefined logo was added 
